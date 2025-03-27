@@ -40,6 +40,27 @@ func GetUserByID(id string) (User, error) {
 	return u, err
 }
 
+func GetUserBySID(sid string) (User, error) {
+	var u User
+	var joined string
+
+	err := sq.
+		Select("*").
+		From("users").
+		Where(sq.Eq{"sid": sid}).
+		RunWith(db).
+		QueryRow().
+		Scan(&u.ID, &u.Name, &u.PasswordHash, &joined, &u.SID)
+
+	if err != nil {
+		return u, err
+	}
+
+	u.Joined, err = time.Parse(time.UnixDate, joined)
+
+	return u, err
+}
+
 func GetUserByName(name string) (User, error) {
 	var u User
 	var joined string

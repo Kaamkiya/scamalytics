@@ -9,7 +9,6 @@ import (
 
 	"github.com/Kaamkiya/scamalytics/internal/db"
 	"github.com/dustin/go-humanize"
-	"github.com/go-chi/chi/v5"
 )
 
 var tmpl *template.Template
@@ -38,10 +37,14 @@ func webLogin(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
-func webProfile(w http.ResponseWriter, r *http.Request) {
-	name := chi.URLParam(r, "name")
 
-	u, err := db.GetUserByName(name)
+func webProfile(w http.ResponseWriter, r *http.Request) {
+	sid, err := r.Cookie("sid")
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+
+	u, err := db.GetUserBySID(sid.Value)
 	if errors.Is(err, sql.ErrNoRows) {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -53,6 +56,29 @@ func webProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := tmpl.ExecuteTemplate(w, "profile", u); err != nil {
+		fmt.Printf("%v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func webLessons(w http.ResponseWriter, r *http.Request) {
+	sid, err := r.Cookie("sid")
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+
+	u, err := db.GetUserBySID(sid.Value)
+	if errors.Is(err, sql.ErrNoRows) {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err := tmpl.ExecuteTemplate(w, "lessons", u); err != nil {
 		fmt.Printf("%v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}

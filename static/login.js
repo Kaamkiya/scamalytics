@@ -17,6 +17,7 @@ async function getSID() {
 	sessionStorage.setItem("name", data.name);
 	sessionStorage.setItem("sid", data.sid);
 	sessionStorage.setItem("id", data.id);
+	document.cookie = `sid=${data.sid}`;
 
 	window.location.href = "/";
 }
