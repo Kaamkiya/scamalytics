@@ -1,0 +1,18 @@
+{{ define "login" }}
+		{{ template "head" . }}
+		<title>Login | Scamalytics</title>
+	</head>
+	<body>
+		{{ template "header" . }}
+		<main>
+			<h1>Login</h1>
+			<label for="name">Username</label>
+			<input type="text" id="name" name="name">
+			<label for="password">Password</label>
+			<input type="password" id="password" name="password">
+
+			<button onclick="getSID()">Login</button>
+		</main>
+		<script module src="/static/login.js"></script>
+		{{ template "footer" . }}
+{{ end }}

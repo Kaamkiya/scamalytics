@@ -1,0 +1,25 @@
+{{ define "signup" }}
+		{{ template "head" . }}
+		<title>Sign Up | Scamalytics</title>
+	</head>
+	<body>
+		{{ template "header" . }}
+		<main>
+			<h1>Sign Up for Scamalytics</h1>
+			<form action="/api/adduser">
+				<label for="name">Username</label>
+				<input type="text" id="name" name="name">
+				<br>
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password">
+				<br>
+				<!--
+					The hidden input is used for the server to detect if the request is
+					made from the website or not.
+				-->
+				<input type="hidden" id="webform" name="webform" value="webform">
+				<input type="submit" value="Sign up!">
+			</form>
+		</main>
+		{{ template "footer" . }}
+{{ end }}
