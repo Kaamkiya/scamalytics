@@ -6,7 +6,7 @@
 		{{ template "header" . }}
 		<main>
 			<h1>Sign Up for Scamalytics</h1>
-			<form action="/api/adduser">
+			<form action="/api/adduser" id="signupform">
 				<label for="name">Username</label>
 				<input type="text" id="name" name="name">
 				<br>
@@ -21,5 +21,19 @@
 				<input type="submit" value="Sign up!">
 			</form>
 		</main>
+		<script>
+			if (sessionStorage.sid) {
+				document.querySelector("#signupform").remove();
+
+				let box = document.createElement("div");
+				box.classList.add("warning");
+				box.innerHTML = `
+					<h3>You're logged in.</h3>
+					<p>If you need to reset your password, please contact the administrator.</p>
+				`;
+
+				document.querySelector("main").appendChild(box);
+			}
+		</script>
 		{{ template "footer" . }}
 {{ end }}

@@ -6,13 +6,29 @@
 		{{ template "header" . }}
 		<main>
 			<h1>Login</h1>
-			<label for="name">Username</label>
-			<input type="text" id="name" name="name">
-			<label for="password">Password</label>
-			<input type="password" id="password" name="password">
+			<div id="loginform">
+				<label for="name">Username</label>
+				<input type="text" id="name" name="name">
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password">
 
-			<button onclick="getSID()">Login</button>
+				<button onclick="getSID()">Login</button>
+			</div>
 		</main>
-		<script module src="/static/login.js"></script>
+		<script src="/static/login.js"></script>
+		<script>
+			if (sessionStorage.sid) {
+				document.querySelector("#loginform").remove();
+
+				let box = document.createElement("div");
+				box.classList.add("warning");
+				box.innerHTML = `
+					<h3>You've already logged in.</h3>
+					<p>If you need to log in again, log out first.</p>
+				`;
+
+				document.querySelector("main").appendChild(box);
+			}
+		</script>
 		{{ template "footer" . }}
 {{ end }}

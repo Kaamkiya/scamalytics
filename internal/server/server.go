@@ -25,6 +25,7 @@ func Run(addr string) {
 	r.Get("/", webHome)
 	r.Get("/signup", webSignup)
 	r.Get("/login", webLogin)
+	r.Get("/user/{name}", webProfile)
 
 	fs := http.FileServer(http.Dir("static"))
 	r.Handle("/static/*", http.StripPrefix("/static/", fs))

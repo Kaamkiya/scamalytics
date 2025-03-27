@@ -1,12 +1,24 @@
 package server
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
+
+	"github.com/Kaamkiya/scamalytics/internal/db"
+	"github.com/dustin/go-humanize"
+	"github.com/go-chi/chi/v5"
 )
 
-var tmpl, err = template.ParseGlob("templates/*.gotmpl")
+var tmpl *template.Template
+
+func init() {
+	tmpl, _ = template.New("root").Funcs(template.FuncMap{
+		"humanizeTime": humanize.Time,
+	}).ParseGlob("templates/*.gotmpl")
+}
 
 func webHome(w http.ResponseWriter, r *http.Request) {
 	if err := tmpl.ExecuteTemplate(w, "index", map[string]string{}); err != nil {
@@ -22,7 +34,26 @@ func webSignup(w http.ResponseWriter, r *http.Request) {
 
 func webLogin(w http.ResponseWriter, r *http.Request) {
 	if err := tmpl.ExecuteTemplate(w, "login", map[string]string{}); err != nil {
-		fmt.Printf("%w\n", err)
+		fmt.Printf("%v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+func webProfile(w http.ResponseWriter, r *http.Request) {
+	name := chi.URLParam(r, "name")
+
+	u, err := db.GetUserByName(name)
+	if errors.Is(err, sql.ErrNoRows) {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err := tmpl.ExecuteTemplate(w, "profile", u); err != nil {
+		fmt.Printf("%v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
