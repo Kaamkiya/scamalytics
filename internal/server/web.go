@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
+	"strconv"
+	"text/template"
 
 	"github.com/Kaamkiya/scamalytics/internal/db"
 	"github.com/dustin/go-humanize"
@@ -118,4 +119,39 @@ func webCourse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeTemplate(w, "course", c, http.StatusInternalServerError)
+}
+
+func webArticle(w http.ResponseWriter, r *http.Request) {
+	sid, err := r.Cookie("sid")
+	if err != nil {
+		writeTemplate(w, "error", WebError{http.StatusUnauthorized}, http.StatusUnauthorized)
+		return
+	}
+
+	_, err = db.GetUserBySID(sid.Value)
+	if errors.Is(err, sql.ErrNoRows) {
+		writeTemplate(w, "error", WebError{http.StatusForbidden}, http.StatusForbidden)
+		return
+	}
+
+	if err != nil {
+		writeTemplate(w, "error", WebError{http.StatusInternalServerError}, http.StatusInternalServerError)
+		return
+	}
+
+	slug := chi.URLParam(r, "slug")
+	sidx := chi.URLParam(r, "idx")
+	idx, err := strconv.Atoi(sidx)
+	if err != nil {
+		writeTemplate(w, "error", WebError{http.StatusBadRequest}, http.StatusBadRequest)
+		return
+	}
+
+	c, ok := courses[slug]
+	if !ok {
+		writeTemplate(w, "error", WebError{http.StatusNotFound}, http.StatusNotFound)
+		return
+	}
+
+	writeTemplate(w, "article", c.Articles[idx], http.StatusOK)
 }

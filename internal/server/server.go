@@ -35,7 +35,7 @@ func Run(addr string) {
 	r.Get("/me", webProfile)
 	r.Get("/courses", webCourses)
 	r.Get("/courses/{slug}", webCourse)
-	//r.Get("/lessons/{slug}", webLesson)
+	r.Get("/courses/{slug}/article/{idx}", webArticle)
 
 	fs := http.FileServer(http.Dir("static"))
 	r.Handle("/static/*", http.StripPrefix("/static/", fs))

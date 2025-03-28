@@ -1,0 +1,11 @@
+{{ define "article" }}
+		{{ template "head" . }}
+		<title>{{ .Title }} - Article | Scamalytics</title>
+	</head>
+	<body>
+		{{ template "header" . }}
+		<main>
+			{{ .Markdown }}
+		</main>
+		{{ template "footer" . }}
+{{ end }}

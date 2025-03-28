@@ -7,8 +7,9 @@
 		<main>
 			<h1>{{ .Name }} Course</h1>
 			<ul>
-			{{ range .Articles }}
-				<li>{{ .Title }}</li>
+			{{ $slug := .ID }}
+			{{ range $i, $a := .Articles }}
+				<li><a href="/courses/{{ $slug }}/article/{{ $i }}">{{ .Title }}</a></li>
 			{{ end }}
 			</ul>
 		</main>

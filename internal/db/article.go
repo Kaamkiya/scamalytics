@@ -2,6 +2,7 @@ package db
 
 import (
 	"bytes"
+	"os"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -20,7 +21,13 @@ type Article struct {
 
 func (a Article) RenderHTML() (string, error) {
 	var buf bytes.Buffer
-	err := md.Convert([]byte(a.Markdown), &buf)
+
+	data, err := os.ReadFile(a.Markdown)
+	if err != nil {
+		return "", err
+	}
+
+	err = md.Convert(data, &buf)
 
 	return buf.String(), err
 }

@@ -12,6 +12,19 @@ func LoadCourses() (c map[string]Course, err error) {
 	}
 
 	err = json.Unmarshal(data, &c)
+	if err != nil {
+		return
+	}
+
+	for k, course := range c {
+		for i, a := range course.Articles {
+			c[k].Articles[i].Markdown, err = a.RenderHTML()
+			if err != nil {
+				return
+			}
+		}
+	}
+
 	return
 }
 

@@ -5,7 +5,7 @@
     "articles": [
       {
         "title": "Misspellings",
-        "markdown": "# Misspellings in email"
+        "markdown": "courses/email/articles/misspellings.md"
       }
     ]
   }
