@@ -1,0 +1,12 @@
+{
+  "email": {
+    "id": "email",
+    "name": "Email Phishing Scams",
+    "articles": [
+      {
+        "title": "Misspellings",
+        "markdown": "# Misspellings in email"
+      }
+    ]
+  }
+}

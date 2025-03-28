@@ -11,7 +11,7 @@ var db *sql.DB
 func Init() (err error) {
 	db, err = sql.Open("sqlite", "scamalytics.db")
 	if err != nil {
-		return err
+		return
 	}
 
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users(

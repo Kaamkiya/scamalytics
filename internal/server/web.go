@@ -9,6 +9,7 @@ import (
 
 	"github.com/Kaamkiya/scamalytics/internal/db"
 	"github.com/dustin/go-humanize"
+	"github.com/go-chi/chi/v5"
 )
 
 var tmpl *template.Template
@@ -70,14 +71,14 @@ func webProfile(w http.ResponseWriter, r *http.Request) {
 	writeTemplate(w, "profile", u, http.StatusOK)
 }
 
-func webLessons(w http.ResponseWriter, r *http.Request) {
+func webCourses(w http.ResponseWriter, r *http.Request) {
 	sid, err := r.Cookie("sid")
 	if err != nil {
 		writeTemplate(w, "error", WebError{http.StatusUnauthorized}, http.StatusUnauthorized)
 		return
 	}
 
-	u, err := db.GetUserBySID(sid.Value)
+	_, err = db.GetUserBySID(sid.Value)
 	if errors.Is(err, sql.ErrNoRows) {
 		writeTemplate(w, "error", WebError{http.StatusForbidden}, http.StatusForbidden)
 		return
@@ -88,5 +89,33 @@ func webLessons(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeTemplate(w, "lessons", u, http.StatusInternalServerError)
+	writeTemplate(w, "courses", courses, http.StatusInternalServerError)
+}
+
+func webCourse(w http.ResponseWriter, r *http.Request) {
+	sid, err := r.Cookie("sid")
+	if err != nil {
+		writeTemplate(w, "error", WebError{http.StatusUnauthorized}, http.StatusUnauthorized)
+		return
+	}
+
+	_, err = db.GetUserBySID(sid.Value)
+	if errors.Is(err, sql.ErrNoRows) {
+		writeTemplate(w, "error", WebError{http.StatusInternalServerError}, http.StatusInternalServerError)
+		return
+	}
+
+	if err != nil {
+		writeTemplate(w, "error", WebError{http.StatusInternalServerError}, http.StatusInternalServerError)
+		return
+	}
+
+	slug := chi.URLParam(r, "slug")
+	c, ok := courses[slug]
+	if !ok {
+		writeTemplate(w, "error", WebError{http.StatusNotFound}, http.StatusNotFound)
+		return
+	}
+
+	writeTemplate(w, "course", c, http.StatusInternalServerError)
 }

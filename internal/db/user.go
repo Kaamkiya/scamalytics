@@ -13,6 +13,7 @@ type User struct {
 	PasswordHash string    `json:"-"`
 	Joined       time.Time `json:"joined"`
 	SID          string    `json:"-"`
+	Data         []Data    `json:"data"`
 }
 
 func (u User) CheckPassword(attempt string) bool {

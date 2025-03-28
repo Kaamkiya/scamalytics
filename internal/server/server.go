@@ -9,11 +9,18 @@ import (
 	"github.com/Kaamkiya/scamalytics/internal/db"
 )
 
+var courses map[string]db.Course
+
 func Run(addr string) {
-	if err := db.Init(); err != nil {
+	var err error
+	if err = db.Init(); err != nil {
 		panic(err)
 	}
 	defer db.Close()
+
+	if courses, err = db.LoadCourses(); err != nil {
+		panic(err)
+	}
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -26,7 +33,8 @@ func Run(addr string) {
 	r.Get("/signup", webSignup)
 	r.Get("/login", webLogin)
 	r.Get("/me", webProfile)
-	r.Get("/lessons", webLessons)
+	r.Get("/courses", webCourses)
+	r.Get("/courses/{slug}", webCourse)
 	//r.Get("/lessons/{slug}", webLesson)
 
 	fs := http.FileServer(http.Dir("static"))

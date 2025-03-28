@@ -1,0 +1,16 @@
+{{ define "course" }}
+		{{ template "head" . }}
+		<title>{{ .Name }} Course | Scamalytics</title>
+	</head>
+	<body>
+		{{ template "header" . }}
+		<main>
+			<h1>{{ .Name }} Course</h1>
+			<ul>
+			{{ range .Articles }}
+				<li>{{ .Title }}</li>
+			{{ end }}
+			</ul>
+		</main>
+		{{ template "footer" . }}
+{{ end }}

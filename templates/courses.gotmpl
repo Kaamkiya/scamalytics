@@ -1,0 +1,19 @@
+{{ define "courses" }}
+		{{ template "head" . }}
+		<title>Lessons | Scamalytics</title>
+	</head>
+	<body>
+		{{ template "header" . }}
+		<main>
+			<h1>Courses</h1>
+
+			<div id="coursegrid">
+				<ul>
+					{{ range . }}
+					<li><a href="/courses/{{ .ID }}">{{ .Name }}</a></li>
+					{{ end }}
+				</ul>
+			</div>
+		</main>
+		{{ template "footer" . }}
+{{ end }}
