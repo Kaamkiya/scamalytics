@@ -1,0 +1,11 @@
+{{ define "error" }}
+		{{ template "head" . }}
+		<title>Error {{ .Code }} | Scamalytics</title>
+	</head>
+	<body>
+		{{ template "header" . }}
+		<main>
+			<h1>Error {{ .Code }}</h1>
+		</main>
+		{{ template "footer" . }}
+{{ end }}

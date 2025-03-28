@@ -19,67 +19,74 @@ func init() {
 	}).ParseGlob("templates/*.gotmpl")
 }
 
-func webHome(w http.ResponseWriter, r *http.Request) {
-	if err := tmpl.ExecuteTemplate(w, "index", map[string]string{}); err != nil {
+func writeTemplate(w http.ResponseWriter, name string, data any, status int) error {
+	err := tmpl.ExecuteTemplate(w, name, data)
+
+	w.WriteHeader(status)
+
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Printf("%v\n", err)
 	}
+
+	return err
+}
+
+func webHome(w http.ResponseWriter, r *http.Request) {
+	writeTemplate(w, "index", map[any]any{}, http.StatusInternalServerError)
 }
 
 func webSignup(w http.ResponseWriter, r *http.Request) {
-	if err := tmpl.ExecuteTemplate(w, "signup", map[string]string{}); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	writeTemplate(w, "signup", map[any]any{}, http.StatusInternalServerError)
 }
 
 func webLogin(w http.ResponseWriter, r *http.Request) {
-	if err := tmpl.ExecuteTemplate(w, "login", map[string]string{}); err != nil {
-		fmt.Printf("%v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	writeTemplate(w, "login", map[any]any{}, http.StatusInternalServerError)
 }
 
 func webProfile(w http.ResponseWriter, r *http.Request) {
 	sid, err := r.Cookie("sid")
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		writeTemplate(
+			w,
+			"error",
+			WebError{http.StatusUnauthorized},
+			http.StatusUnauthorized,
+		)
+		return
 	}
 
 	u, err := db.GetUserBySID(sid.Value)
 	if errors.Is(err, sql.ErrNoRows) {
-		w.WriteHeader(http.StatusNotFound)
+		writeTemplate(w, "error", WebError{http.StatusNotFound}, http.StatusNotFound)
 		return
 	}
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		writeTemplate(w, "error", WebError{http.StatusInternalServerError}, http.StatusInternalServerError)
 		return
 	}
 
-	if err := tmpl.ExecuteTemplate(w, "profile", u); err != nil {
-		fmt.Printf("%v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	writeTemplate(w, "profile", u, http.StatusOK)
 }
 
 func webLessons(w http.ResponseWriter, r *http.Request) {
 	sid, err := r.Cookie("sid")
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		writeTemplate(w, "error", WebError{http.StatusUnauthorized}, http.StatusUnauthorized)
+		return
 	}
 
 	u, err := db.GetUserBySID(sid.Value)
 	if errors.Is(err, sql.ErrNoRows) {
-		w.WriteHeader(http.StatusForbidden)
+		writeTemplate(w, "error", WebError{http.StatusForbidden}, http.StatusForbidden)
 		return
 	}
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		writeTemplate(w, "error", WebError{http.StatusInternalServerError}, http.StatusInternalServerError)
 		return
 	}
 
-	if err := tmpl.ExecuteTemplate(w, "lessons", u); err != nil {
-		fmt.Printf("%v\n", err)
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	writeTemplate(w, "lessons", u, http.StatusInternalServerError)
 }
